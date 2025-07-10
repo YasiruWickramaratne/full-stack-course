@@ -1,18 +1,10 @@
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 
 const Button = ({ onClick, text }) => (
   <button type='button' onClick={onClick}>
     {text}
   </button>
 )
-
-const getRandom = (select) => {
-  let rand;
-  do {
-    rand = Math.floor(Math.random() * 8);
-  } while (rand === select);
-  return rand;
-}
 
 const App = () => {
 
@@ -29,21 +21,26 @@ const App = () => {
 
   const [selected, setSelected] = useState(0)
 
-  useEffect(() => { setSelected(getRandom(selected)) }, [])
-
-  const [votes, setVotes] = useState(Array(anecdotes.length).fill(0))
+  const [votes, setVotes] = useState(() => Array(anecdotes.length).fill(0))
 
   //console.log(votes)
 
-  const setVote = () => {
+  const getRandom = (exclude) => {
+    let rand
+    do {
+      rand = Math.floor(Math.random() * anecdotes.length)
+    } while (rand === exclude)
+    return rand
+  }
+
+  const handleVote = () => {
     const copy = [...votes]
     copy[selected] += 1
     setVotes(copy)
   }
 
-  const nextAnecdote = () => {
-    const rand = getRandom(selected)
-    setSelected(rand)
+  const handleNext = () => {
+    setSelected(getRandom(selected))
   }
 
   const maxVotes = Math.max(...votes)
@@ -54,8 +51,8 @@ const App = () => {
       <h1>Anecdote of the day</h1>
       <p>{anecdotes[selected]}</p>
       <p>has {votes[selected]} votes</p>
-      <Button onClick={setVote} text='vote'></Button>
-      <Button onClick={nextAnecdote} text='next anecdote'></Button>
+      <Button onClick={handleVote} text='vote'></Button>
+      <Button onClick={handleNext} text='next anecdote'></Button>
 
       <h1>Anecdote with most votes</h1>
       {maxVotes > 0 ? (
